@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="estilo_cadastrado.css">
+    <title>registrado</title>
+</head>
+<body>
+
+    <img class="voltar" src="voltar.png" onclick="abrir('cadastro.html');" width="40px">
+
+    <div class="logo">
+        <img id="imagem" src="logo.png" width="100px" height="100px">
+    </div>
+    <br>
+
+    Preencha os seguintes campos obrigatórios:
+
+    <form>
+        <input type="text" placeholder="login" class="link" id="login">
+        <input type="text" placeholder="endereço" class="link" id="endereco">
+        <input type="text" placeholder="cpf" class="link" id="cpf">
+        <input type="email" placeholder="email" class="link" id="email">
+        <input type="password" placeholder="senha" class="link" id="senha">
+    </form>
+
+    Escolha sua foto de perfil:
+    <input type="file" class="upload" id="upload"></input><br>
+    <div class="links" id="links" onclick="Inserir(); ">Confirmar </div>
+    
+    <button onclick="Ex();" class="editar">
+        - EXCLUIR
+    </button>
+
+    <button onclick="Alterar();" class="editar">
+        @ ALTERAR
+    </button>
+
+    <button onclick="Pesquisar();" class="editar">
+        -> PESQUISAR
+    </button>
+
+    <div id="listagem" class="listagem"></div>
+    
+</body>
+
+<script src="jquery-3.6.0.min.js"></script>
+
+<script>
+    // Criando a base de dados SENAI:
+    var db = openDatabase('registros','v1.0','registro',2*1024*1024);
+
+    // Criando a tabela se não existir
+    db.transaction(function(tx)
+    {
+        // Vá em INSPECIONAR >> Application -> WEB SQL
+        tx.executeSql('CREATE TABLE IF NOT EXISTS registro(login VARCHAR(30) PRIMARY KEY, email VARCHAR(40),cpf VARCHAR(30), senha VARCHAR(30), endereco VARCHAR(50), imagem VARCHAR(500))')
+    })
+
+    function Inserir()
+    {
+        if(login.value!="" && endereco.value!="" && cpf.value!="" && email.value!="" && senha.value!="")
+        {
+        var consulta = 'SELECT * FROM registro WHERE login=? OR cpf=? OR email=?';
+        db.transaction(function(tx)
+        {
+        tx.executeSql(consulta,[login.value,cpf.value,email.value], function(tx,resultados)
+        {   
+            // Pegando o número de linhas retornado:
+            var linhas = resultados.rows.length;
+            if (linhas==0)
+            {
+                db.transaction(function(tx)
+                {
+                    tx.executeSql('INSERT INTO registro (login,senha,cpf,email,endereco,imagem) VALUES(?,?,?,?,?,?)',[login.value,senha.value,cpf.value,email.value,endereco.value,imagem.src]);
+                })
+                localStorage.setItem("loginAtivo", login.value);
+                alert('Usuário cadastrado com sucesso!');
+                Entrar();
+            }
+            else
+            {
+                alert('Login, cpf ou e-mail já cadastrado!');
+            }
+            
+        })
+    });
+    } 
+    else
+    {
+        alert('Favor preencher os campos requisitados! ');
+    }
+    }
+    
+    function Excluir(login)
+    {
+        db.transaction(function(tx)
+        {
+            tx.executeSql('DELETE FROM registro WHERE login=?',[login]);
+        })
+        alert('Usuário '+login+' excluído!')
+    }
+
+    function Alterar()
+    {
+        db.transaction(function(tx)
+        {
+            tx.executeSql('UPDATE registro SET senha=?,cpf=?, email=?, endereco=?, imagem=? WHERE login=?',[senha.value,cpf.value,email.value,endereco.value,imagem.value,login.value]);
+        })
+    }
+
+function Pesquisar()
+    {
+        db.transaction(function(tx)
+        {
+            var consulta = 'SELECT * FROM registro';
+            tx.executeSql(consulta,[], function(tx,resultados)
+            {   
+                // Pegando o número de linhas retornado:
+                var linhas = resultados.rows.length;
+                if (linhas==0)
+                {
+                    alert("Registros não encontrado");
+                }
+               
+                var t = ""
+                var c = ""
+                var login = ""
+                var email = ""
+                var cpf = ""
+                var senha = ""
+                var endereco = ""
+
+
+                 // Percorrendo cada linha:
+                 for(i=0; i<linhas; i++)
+                {
+                    // Vamos pegar as colunas e jogar cada uma dentro de uma DIV:
+                     c = resultados.rows.item(i).rowid
+                     login = resultados.rows.item(i).login
+                     email = resultados.rows.item(i).email
+                     cpf = resultados.rows.item(i).cpf
+                     senha = resultados.rows.item(i).senha
+                     endereco = resultados.rows.item(i).endereco
+                     img = resultados.rows.item(i).imagem;
+                    t = t + "<div class='linha'>"
+                    t = t + "<div class='mos'>" + login + "</div>"
+                    t = t + "<div class='mos'>" + email + "</div>"
+                    t = t + "<div class='mos'>" + cpf + "</div>"
+                    t = t + "<div class='mos'>" + senha + "</div>"
+                    t = t + "<div class='mos'>" + endereco + "</div>"
+                    t = t + "<img src='x.png' width='20px' height='20px' onclick=\"Excluir('"+login+"');\"></div><br><br>"
+                }
+                listagem.innerHTML = t
+            });
+        })
+    }
+
+
+    $(document).on("change", "#upload", function(e) {
+        showThumbnail(this.files);
+    });
+
+    function showThumbnail(files) {
+        if (files && files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+               imagem.src =  e.target.result;
+
+
+               db.transaction(function(tx)
+                {
+                    tx.executeSql('UPDATE registro SET imagem=? WHERE login=?',[imagem.src,login.value]);
+                })
+            }
+
+            reader.readAsDataURL(files[0]);
+        }
+    }
+
+    function Entrar()
+    {
+       
+            var usuario =  login.value; 
+            window.open("inicio.html?usuario="+usuario,"_self");    
+
+    }
+
+    function abrir(arquivo)
+{
+    window.open(arquivo+"?usuario="+usuario,"_self")
+}
+
+var variaveis = new URLSearchParams(location.search);
+var usuario = variaveis.get('usuario');
+
+    </script>
+
+</html>

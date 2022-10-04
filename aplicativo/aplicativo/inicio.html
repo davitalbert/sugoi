@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pratos</title>
+    <link rel="stylesheet" href="estilo_inicio.css">
+</head>
+<body>
+
+    <div class="logo">
+        <img src="logo.png">
+    </div>
+
+        <button class="promo" >
+            <a href="#" onclick="compra(); abrir('pedidos.html');" class="href">  
+                <div class="text">R$20,00</div>
+                <img src="sukiyaki1.png" class="text" width="75px">
+                <div class="text">sukiyaki</div>
+            </a>
+        </button>
+
+        <div class="linha1">
+
+        <a href="#" onclick="compra(); abrir('pedidos.html');">
+            <div class="links"><img src="onigiri.png" class="img" height="40px" width="40px"></div>
+        </a>
+    
+        <a href="#" onclick="compra(); abrir('pedidos.html');">
+            <div class="links"><img src="sushi.png" class="img" height="40px" width="40px"></div>
+        </a>
+
+        <a href="#" onclick="compra(); abrir('pedidos.html');">
+            <div class="links"><img src="yakisoba.png" class="img" height="40px" width="40px"></div>
+        </a>
+
+        <a href="#" onclick="compra(); abrir('pedidos.html');">
+            <div class="links"><img src="sukiyaki.png" class="img" height="40px" width="40px"></div>
+        </a>
+    
+        <a href="#" onclick="compra(); abrir('pedidos.html');">          
+            <div class="links"><img src="sashimi.png" class="img" height="40px" width="40px"></div>
+        </a>
+
+        <a href="#" onclick="compra(); abrir('pedidos.html');">          
+            <div class="links"><img src="barco.png" class="img" height="40px" width="40px"></div>
+            </a>
+        
+        </div>
+
+        <div class="t">
+        sugestão do dia:
+        <div class="sugestao">
+            <a href="#" onclick="compra(); abrir('pedidos.html');"> 
+                <div class="link"><img src="sukiyaki.png" height="60%"></div>
+            </a>
+        </div>
+    </div>
+            
+        <div class="rodape">
+            
+            <a href="#" onclick="abrir('inicio.html');">  
+            <div class="vermelho" ><img src="casa.png" width=45 height=45></div>
+            </a>
+
+            <a href="#" onclick="abrir('buscar.html');">  
+            <div class="vermelho" ><img src="pesquisar.png" width=45 height=45></div>
+            </a>
+
+            <a href="#" onclick="abrir('pedidos.html');">  
+                <div class="vermelho" ><img src="pedido.png" width=45 height=45></div>
+            </a>
+
+            <a href="#" onclick="abrir('perfil.html');">  
+            <div class="vermelho" ><img src="usuario.png" width=45 height=45 ></div>
+            </a>
+    </div>
+
+</body>
+<script>
+   var db = openDatabase('SENAI5','v1.0','Base de pedidos',2*1024*1024);
+
+// Criando a tabela se não existir
+db.transaction(function(tx)
+{
+    // Vá em INSPECIONAR >> Application -> WEB SQL
+    tx.executeSql('CREATE TABLE IF NOT EXISTS pedidos(cod INTEGER PRIMARY KEY AUTOINCREMENT,produto VARCHAR(20), preco DECIMAL)')
+})
+
+function Inserir()
+{
+    db.transaction(function(tx)
+    {
+        tx.executeSql('INSERT INTO pedidos(produto,preco) VALUES(?,?)',[produto.value,preco.value])
+    })
+}
+function Pesquisar()
+{
+    db.transaction(function(tx)
+    {
+        var consulta = 'SELECT * FROM pedidos';
+        tx.executeSql(consulta,[], function(tx,resultados)
+        {   
+            // Pegando o número de linhas retornado:
+            var linhas = resultados.rows.length;
+            if (linhas==0)
+            {
+                alert("NÃO ENCONTRADO");
+            }
+           
+            var t = ""
+            var c = ""
+            var pro = ""
+            var pre = ""
+
+
+             // Percorrendo cada linha:
+            for(i=0; i<linhas; i++)
+            {
+                // Vamos pegar as colunas e jogar cada uma dentro de uma DIV:
+                 c = resultados.rows.item(i).cod
+                 pro = resultados.rows.item(i).produto
+                 pre = resultados.rows.item(i).preco;
+                t = t + "<div class='linha'>"
+                t = t + "<div class=codigo>" + c + "</div>"
+                t = t + "<div class='produto'>" + pro + "</div>"
+                t = t + "<div class='preco'>" + pre + "</div>"
+                t = t + "</div>" 
+            }
+            listagem.innerHTML = t
+        });
+    })
+}
+
+var variaveis = new URLSearchParams(location.search);
+var usuario = variaveis.get('usuario');
+
+function abrir(arquivo)
+{
+    window.open(arquivo+"?usuario="+usuario,"_self")
+}
+
+db.transaction(function(tx)
+        {
+            var consulta = 'SELECT * FROM usuarios WHERE login=?';
+            console.log(consulta)
+            tx.executeSql(consulta,[usuario], function(tx,resultados)
+            {   
+                // Pegando o número de linhas retornado:
+                var linhas = resultados.rows.length;
+                if (linhas>0)
+                {
+                   imagem.src= resultados.rows.item(0).imagem;
+                }
+               
+               
+            });
+        })
+    
+var variaveis = new URLSearchParams(location.search);
+var usuario = variaveis.get('usuario');
+
+function abrir(arquivo)
+{
+    window.open(arquivo+"?usuario="+usuario,"_self")
+}
+
+function compra()
+{
+    alert('compra concluida')
+}
+
+</script>
+</html>

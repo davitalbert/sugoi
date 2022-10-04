@@ -1,0 +1,122 @@
+body
+{
+    background-color: rgb(180, 39, 39);
+    transition-timing-function: linear;
+    animation: fadein 2s;
+    align-items: center;
+    margin: 0;
+}
+
+@keyframes fadein {
+    from {opacity:0; }
+    to {opacity: 1;}
+}
+
+.link
+{
+    display: flex;
+    justify-content: center;
+    background-color: rgb(224, 186, 104);  
+    border-style: solid;       
+    border-width:2px;   
+    border-color: wheat;  
+    font-size: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+}
+
+.links
+{
+    width:90%;                                         
+    background-color: rgb(172, 66, 66);  
+    border-style: solid;       
+    border-width:2px;   
+    border-color: darkred;  
+    margin: 20px;
+    font-size: 15px;
+    font-family: 'Courier New', Courier, monospace;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.text
+{
+    width: 70%;
+}
+
+.input
+{
+    background-color: rgb(177, 135, 80);
+    border-color:rgb(141, 113, 76);;
+    border-radius: 20px;
+    padding: 1%;
+    margin-left: 5%;
+}
+
+.button
+{
+    border-radius: 5px;
+    background-color:rgb(177, 135, 80);
+    border-color: rgb(141, 113, 76);
+}
+
+.preco
+{
+    color: rgb(244, 236, 236);
+    font-size: 100%;
+
+}
+
+.rodape
+{
+    width: 95%;
+    display: flex;
+    padding: 10px;
+    background-color: rgb(112, 18, 26);
+    justify-content: space-between;
+    position:fixed;
+    bottom:0;
+}
+.vermelho
+{
+    border-radius: 20px;
+    height: 50px;
+    width: 50px;
+    border-radius: 100px;
+}
+
+.ref
+{
+    color: rgb(175, 147, 134);
+}
+
+.listagem{
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    background-color: rgb(112, 18, 26);
+    border-radius: 15px;
+    margin-right: 10%;
+    margin-left: 10%;
+}
+.linha{
+    display: flex;
+    flex-direction: row;
+    
+}
+
+.botao
+{
+    display: flex;
+    flex-direction: row;
+    height: 20px;
+    width: 90%;
+}
+
+.legenda
+{
+    background-color: rgb(112, 18, 26);
+    margin-right: 75%;
+    color: orange;
+}

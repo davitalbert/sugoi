@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="estilo_cadastro.css">
+    <title>Cadastro</title>
+</head>
+
+<body>
+
+    <div class="logo">
+        <img src="logo.png">
+    </div>
+
+    <input type="text" placeholder="insira seu nome" class="link" id="login">
+    <input type="password" placeholder="insira sua senha" class="lin" id="senha">
+    
+    <br><br>
+    <div class="links" id="links" onclick="Entrar();">Confirmar</div>
+
+    <br>
+    <button class="novo" onclick="window.location.href='registrado.html';">Novo usuário </button>
+
+</body>
+
+<script>
+
+function checkDevice() { 
+ if( navigator.userAgent.match(/Android/i)
+ || navigator.userAgent.match(/webOS/i)
+ || navigator.userAgent.match(/iPhone/i)
+ || navigator.userAgent.match(/iPad/i)
+ || navigator.userAgent.match(/iPod/i)
+ || navigator.userAgent.match(/BlackBerry/i)
+ || navigator.userAgent.match(/Windows Phone/i)
+ ){
+    return true; // está utilizando celular
+  }
+ else {
+    return false; // não é celular
+  }
+}
+console.log(checkDevice()); // false - estou no PC
+
+var db = openDatabase('registros','v1.0','Base de usuários',2*1024*1024);
+
+// Criando a tabela se não existir
+db.transaction(function(tx)
+{
+    // Vá em INSPECIONAR >> Application -> WEB SQL
+    tx.executeSql('CREATE TABLE IF NOT EXISTS registro(login VARCHAR(30) PRIMARY KEY, email VARCHAR(40),cpf VARCHAR(30), senha VARCHAR(30), endereco VARCHAR(50), imagem VARCHAR(500))')
+})
+
+function Entrar()
+    {
+        if(login.value!="" && senha.value!="")
+        {
+        var usuario =  login.value; 
+        db.transaction(function(tx)
+        {
+            var consulta = 'SELECT * FROM registro WHERE login=? AND senha=?';
+            console.log(consulta)
+            tx.executeSql(consulta,[login.value,senha.value], function(tx,resultados)
+            {   
+                // Pegando o número de linhas retornado:
+                var linhas = resultados.rows.length;
+                if (linhas>0)
+                {
+                    window.open("inicio.html?usuario="+usuario,"_self");
+                }
+                else
+                {
+                    alert('Usuário não encontrado ou dados incorretos! ')
+                }
+               
+               
+            });
+               
+        }) 
+            
+        }
+        else
+        {
+            alert('Favor informar usuário e senha! ')
+        }
+    }
+    
+</script>
+</html>
